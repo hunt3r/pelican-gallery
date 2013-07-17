@@ -21,6 +21,11 @@ This plugin requires the PIL library to function. Install Python PIL library in 
 
 ```brew install pil```
 
+Feel free to write more transforms, see the PIL docs for what it can do:
+http://www.pythonware.com/media/data/pil-handbook.pdf 
+http://effbot.org/imagingbook/image.htm
+http://effbot.org/imagingbook/imageops.htm
+
 ##Settings:
 You will need to add some variables to your pelicanconf.py and publishconf.py respectively.  The settings should be added towards the bottom as there are some dependencies on other variables that come with a basic pelican setup.  
 
