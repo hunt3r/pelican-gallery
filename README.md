@@ -15,8 +15,10 @@ Add gallery.py to your plugins folder.  You may need to set this up if you haven
 PLUGIN_PATH = "my_plugins"
 PLUGINS = [my_plugins.gallery"]
 ```
+see: http://docs.getpelican.com/en/latest/plugins.html for more details on plugins in Pelican
 
-Install Python PIL library in your virtual environment.  On Mac OSX I found that this works best if you use brew package manager as many of the underlying C libraries are easier to install using this method.  There are ways to do it without brew but you'll need to read up on what is best for your environment
+This plugin requires the PIL library to function. Install Python PIL library in your virtual environment.  On Mac OSX I found that this works best if you use brew package manager as many of the underlying C libraries are easier to install using this method.  There are ways to do it without brew but you'll need to read up on what is best for your environment
+
 ```brew install pil```
 
 ##Settings:
