@@ -43,13 +43,12 @@ GALLERY_PRESETS = [
 THUMBNAIL_GALLERY_CLASS = "span2"
 ```
 
-##How to load a gallery into an article object
-Article metadata example, this should be added to your standard markdown header data:
--------------------------
+## Add to markdown header
+```
 Gallery: my/gallery/path
+```
 
 ##Template implementation
-
 This is just a sample of how you might iterate over a gallery in a template or template partial.
 
 ```
