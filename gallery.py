@@ -137,7 +137,7 @@ class Gallery():
 
     def create_preset_images(self):
         """Creates the image assets for each preset and returns a PhotoSet object"""
-        for f in self.get_files_from_data():
+        for f in sorted(self.get_files_from_data()):
             photoInstances = {}
             for preset in self.generator.settings["GALLERY_PRESETS"]:
                 preset_dir = "%s%s%s" % (self.absolute_output_path,
@@ -181,4 +181,6 @@ def get_galleries(generator, metadata):
 def register():
     # signals.article_generator_init.connect(init_gallery_plugin)
     signals.article_generate_context.connect(get_galleries)
+    signals.page_generator_context.connect(get_galleries)
+
 
