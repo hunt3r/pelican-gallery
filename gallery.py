@@ -1,6 +1,6 @@
-import logging, json, os, sys, time, Image
+import logging, json, os, sys, time
 from pelican import signals
-from PIL import ImageOps
+from PIL import ImageOps, Image
 
 """
 
