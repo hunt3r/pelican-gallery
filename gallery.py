@@ -180,7 +180,7 @@ def get_galleries(generator, metadata):
 
 def register():
     # signals.article_generator_init.connect(init_gallery_plugin)
-    signals.article_generate_context.connect(get_galleries)
+    signals.article_generator_context.connect(get_galleries)
     signals.page_generator_context.connect(get_galleries)
 
 
