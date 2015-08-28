@@ -1,15 +1,15 @@
-import logging, json, os, sys, time, Image
+import logging, json, os, sys, time
 from pelican import signals
-from PIL import ImageOps
+from PIL import ImageOps, Image
 
 """
 
 Gallery plugin for Pelican
 ==========================
 
-This plugin creates a gallery attribute on content (article.gallery) you want to create.  You 
+This plugin creates a gallery attribute on content (article.gallery) you want to create.  You
 will define named presets which can be referenced in your templates.  It will attempt to be smart
-about regenerating photos once they exist.  
+about regenerating photos once they exist.
 
 - Resizes images respective of aspect ratio
 - Allows for multiple presets e.g. -> article.gallery.photos[0]['thumb']
@@ -27,7 +27,7 @@ GALLERY_PRESETS = [
                     {"name": "thumb", "actions": [{"type": "fit", "height": 100, "width": 100, "from": (0.5, 0.5) }]},
                     {"name": "slider", "actions": [{"type": "fit", "height": 300, "width": 900, "from": (0.5, 0.5) }]},
                     {"name": "large", "actions": [{"type": "resize", "height": 640, "width": 850, "from": (0.5, 0.5) }]},
-                    {"name": "thumb_greyscale", 
+                    {"name": "thumb_greyscale",
                         "actions": [
                             {"type": "fit", "height": 100, "width": 100, "from": (0.5, 0.5) },
                             {"type": "greyscale"}
@@ -74,19 +74,18 @@ class Photo():
         self.process_image()
         self.image = Image.open(self.output_file)
         self.width, self.height = self.image.size
-        self.src = "%s%s%s%s%s%s%s" %(self.gallery.generator.settings["GALLERY_FOLDER"], 
-                                        os.sep, 
-                                        self.gallery.gallery_name, 
+        self.src = "%s%s%s%s%s%s%s" %(self.gallery.generator.settings["GALLERY_FOLDER"],
                                         os.sep,
-                                        self.preset["name"], 
+                                        self.gallery.gallery_name,
+                                        os.sep,
+                                        self.preset["name"],
                                         os.sep,
                                         self.filename)
-
 
     def process_image(self):
         """Responsible for applying presets to the Image obj"""
         if not os.path.isfile(self.output_file) or self.gallery.generator.settings["GALLERY_REGENERATE_EXISTING"]:
-            
+
             # Actions should be processed in order of appearance in actions array
             for i in range(len(self.preset["actions"])):
                 a = self.preset["actions"][i]
@@ -96,18 +95,16 @@ class Photo():
                         a["from"] = (0.5, 0.5) # crop from middle by default
 
                     self.image = ImageOps.fit(self.image, (a["width"], a["height"],), method=Image.ANTIALIAS, centering=a["from"])
-                
+
                 if a["type"] == "greyscale":
                     self.image = ImageOps.grayscale(self.image)
 
                 if a["type"] == "resize":
                     self.image.thumbnail((a["width"], a["height"]), Image.NEAREST)
-                
+
                 # TODO: Write other useful transforms here!
-            
 
             self.image.save(self.output_file, "JPEG")
-
 
 
 class Gallery():
@@ -124,15 +121,15 @@ class Gallery():
 
         if "gallery" in self.metadata:
             self.gallery_name = self.metadata["gallery"]
-            self.absolute_src_path =  "%s%s%s" % (self.generator.settings["GALLERY_SRC_PATH"], 
-                                                    os.sep, 
-                                                    self.gallery_name)
-
-            self.absolute_output_path = "%s%s%s" % (self.generator.settings["GALLERY_OUTPUT_PATH"], 
+            self.absolute_src_path =  "%s%s%s" % (self.generator.settings["GALLERY_SRC_PATH"],
                                                     os.sep,
                                                     self.gallery_name)
 
-            self.create_preset_folders() 
+            self.absolute_output_path = "%s%s%s" % (self.generator.settings["GALLERY_OUTPUT_PATH"],
+                                                    os.sep,
+                                                    self.gallery_name)
+
+            self.create_preset_folders()
             self.create_preset_images()
 
     def create_preset_images(self):
@@ -141,12 +138,12 @@ class Gallery():
             photoInstances = {}
             for preset in self.generator.settings["GALLERY_PRESETS"]:
                 preset_dir = "%s%s%s" % (self.absolute_output_path,
-                                         os.sep, 
+                                         os.sep,
                                          preset["name"])
                 photoInstances[preset["name"]] = Photo(self, f, preset_dir, preset)
-                
+
             self.photos.append(photoInstances)
-            
+
     def create_preset_folders(self):
         """Creates the folder structure for a gallery"""
 
@@ -156,22 +153,20 @@ class Gallery():
         # Create gallery preset folders for this gallery
         if "GALLERY_PRESETS" in self.generator.settings:
             for preset in self.generator.settings["GALLERY_PRESETS"]:
-                preset_dir = "%s%s%s" % (self.absolute_output_path, 
+                preset_dir = "%s%s%s" % (self.absolute_output_path,
                                         os.sep,
                                         preset["name"])
                 self.preset_dir.append(preset_dir)
                 if not os.path.exists(preset_dir):
                     os.makedirs(preset_dir)
         else:
-            print "You have no presets defined, please add GALLERY_PRESETS array to settings file, with at least one preset defined, see docs."
-    
+            print("You have no presets defined, please add GALLERY_PRESETS array to settings file, with at least one preset defined, see docs.")
+
     def get_files_from_data(self):
-        print "getting files for %s" % self.absolute_src_path
+        print("getting files for %s" % self.absolute_src_path)
         from os import listdir
         from os.path import isfile, join
         return [ f for f in listdir(self.absolute_src_path) if isfile(join(self.absolute_src_path,f)) and f != ".DS_Store" ]
-
-
 
 
 def get_galleries(generator, metadata):
@@ -182,5 +177,4 @@ def register():
     # signals.article_generator_init.connect(init_gallery_plugin)
     signals.article_generate_context.connect(get_galleries)
     signals.page_generator_context.connect(get_galleries)
-
 
